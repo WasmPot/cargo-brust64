@@ -1,11 +1,16 @@
 use docopt::Docopt;
 use std::path::Path;
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 use walkdir::WalkDir;
-use std::fs;
+use std::{fs, env};
+use std::fs::File;
+use std::io::Write;
 
+extern crate tera;
 extern crate base64;
 use base64::{encode};
+use tera::{Tera, Context};
+use std::process::exit;
 
 const USAGE: &'static str = r#"
 Extract the content of static files like html, js, css in a given directory
@@ -29,27 +34,61 @@ Options:
 
 #[derive(Debug, Deserialize)]
 struct Args {
-    arg_dir: String,
+    arg_in: String,
     arg_out: String,
     flag_version: bool,
     flag_ignore_extension: bool,
 }
 
+#[derive(Debug, Serialize)]
+struct SFile {
+    name: String,
+    content: String
+}
+
 fn main() {
+    if env::var("CARGO").is_err() {
+        eprintln!("This binary may only be called via `cargo brust64`.");
+        exit(1);
+    }
+
+    let mut files: Vec<SFile> = vec![];
     let args: Args = Docopt::new(USAGE)
         .and_then(|d| d.deserialize())
         .unwrap_or_else(|e| e.exit());
-    println!("{:?}", args);
+    //println!("{:?}", args);
 
-    if Path::new(&args.arg_dir).exists() {
-        for entry in WalkDir::new(args.arg_dir) {
+    let tera_renderer = match Tera::new("templates/*.txt") {
+        Ok(t) => t,
+        Err(e) => {
+            println!("Parsing error(s): {}", e);
+            ::std::process::exit(1);
+        }
+    };
+
+    if Path::new(&args.arg_in).exists() {
+        for entry in WalkDir::new(args.arg_in) {
             let entry = entry.unwrap();
             if entry.path().is_file() {
-                println!("{}", entry.path().display());
+                //println!("{}", entry.path().display());
                 let contents = fs::read_to_string(entry.path())
                     .expect("Something went wrong reading the file");
-                println!("{}", encode(contents));
+                let file = SFile {
+                    name: entry.path().display().to_string(),
+                    content: encode(contents)
+                };
+                //println!("{:?}", file);
+                files.push(file);
             }
         }
     }
+
+    let mut context = Context::new();
+    context.insert("static_files", &files);
+
+    let out = tera_renderer.render("template.txt", &context).unwrap();
+    let mut output = File::create("./static_files.rs").unwrap();
+    write!(output, "{}", out).unwrap();
+
+    println!("{}", out);
 }

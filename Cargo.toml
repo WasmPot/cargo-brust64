@@ -11,3 +11,4 @@ docopt = "1"
 serde = { version = "1", features = ["derive"] }
 walkdir = "2"
 base64 = "0.13.0"
+tera = "1"
