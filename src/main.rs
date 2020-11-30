@@ -70,7 +70,7 @@ fn main() {
         for entry in WalkDir::new(args.arg_in) {
             let entry = entry.unwrap();
             if entry.path().is_file() {
-                //println!("{}", entry.path().display());
+                println!("{}", entry.path().display());
                 let contents = fs::read_to_string(entry.path())
                     .expect("Something went wrong reading the file");
                 let file = SFile {
@@ -87,8 +87,6 @@ fn main() {
     context.insert("static_files", &files);
 
     let out = tera_renderer.render("template.txt", &context).unwrap();
-    let mut output = File::create("./static_files.rs").unwrap();
+    let mut output = File::create(args.arg_out).unwrap();
     write!(output, "{}", out).unwrap();
-
-    println!("{}", out);
 }
