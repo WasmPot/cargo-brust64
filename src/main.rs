@@ -66,6 +66,16 @@ struct SFile {
     content: String
 }
 
+fn version() -> String {
+    format!(
+        "cargo-brust64 {}.{}.{}{}",
+        option_env!("CARGO_PKG_VERSION_MAJOR").unwrap_or("X"),
+        option_env!("CARGO_PKG_VERSION_MINOR").unwrap_or("X"),
+        option_env!("CARGO_PKG_VERSION_PATCH").unwrap_or("X"),
+        option_env!("CARGO_PKG_VERSION_PRE").unwrap_or("")
+    )
+}
+
 fn main() {
     if env::var("CARGO").is_err() {
         eprintln!("This binary may only be called via `cargo brust64`.");
@@ -74,7 +84,7 @@ fn main() {
 
     let mut files: Vec<SFile> = vec![];
     let args: Args = Docopt::new(USAGE)
-        .and_then(|d| d.deserialize())
+        .and_then(|d| d.version(Some(version())).deserialize())
         .unwrap_or_else(|e| e.exit());
     //println!("{:?}", args);
 
