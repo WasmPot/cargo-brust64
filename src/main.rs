@@ -36,11 +36,11 @@ const TEMPLATE: &'static str = r#"
 use std::collections::HashMap;
 
 pub struct StaticFiles<'a> {
-    map: HashMap<&'a str, &'a str>
+    pub(crate) map: HashMap<&'a str, &'a str>
 }
 
-impl StaticFiles {
-    pub fn new() -> StaticFiles {
+impl<'a> StaticFiles<'a> {
+    pub fn new() -> StaticFiles<'a> {
         let mut files = StaticFiles {
             map: HashMap::new()
         };
