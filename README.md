@@ -16,7 +16,7 @@ A cargo command to encore a bunch of static files into base64 and contained in a
 # Install
 
 ```
-cargo install brust64
+cargo install --path .
 ```
 
 # Usage
