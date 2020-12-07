@@ -32,6 +32,26 @@ Options:
     --ignore-extension   Disable the extension verification
 "#;
 
+const TEMPLATE: &'static str = r#"
+use std::collections::HashMap;
+
+pub struct StaticFiles<'a> {
+    map: HashMap<&'a str, &'a str>
+}
+
+impl StaticFiles {
+    pub fn new() -> StaticFiles {
+        let mut files = StaticFiles {
+            map: HashMap::new()
+        };
+        {% for file in static_files %}
+        files.map.insert("{{file.name}}", "{{file.content}}");{% endfor %}
+
+        files
+    }
+}
+"#;
+
 #[derive(Debug, Deserialize)]
 struct Args {
     arg_in: String,
@@ -58,7 +78,8 @@ fn main() {
         .unwrap_or_else(|e| e.exit());
     //println!("{:?}", args);
 
-    let tera_renderer = match Tera::new("templates/*.txt") {
+    let mut tera_renderer = Tera::default();
+    match tera_renderer.add_raw_template("template", TEMPLATE) {
         Ok(t) => t,
         Err(e) => {
             println!("Parsing error(s): {}", e);
@@ -86,7 +107,7 @@ fn main() {
     let mut context = Context::new();
     context.insert("static_files", &files);
 
-    let out = tera_renderer.render("template.txt", &context).unwrap();
+    let out = tera_renderer.render("template", &context).unwrap();
     let mut output = File::create(args.arg_out).unwrap();
     write!(output, "{}", out).unwrap();
 }
