@@ -1,6 +1,6 @@
 [package]
 name = "cargo-brust64"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["david haioum <dav6983@gmail.com>"]
 edition = "2018"
 

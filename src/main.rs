@@ -29,18 +29,19 @@ Or <in> can be a file that will be read and encoded content into a rust function
 Options:
     -h, --help           Show this help message and exit.
     --version            Show the version.
-    --ignore-extension   Disable the extension verification
+    --ignore-first-dir   Don't include the first directory path
+    --pn=<pn>            Give a custom name to the rust static file structure 'StaticFiles{PROJECT_NAME}<a'>'
 "#;
 
 const TEMPLATE: &'static str = r#"
 use std::collections::HashMap;
 
-pub struct StaticFiles<'a> {
+pub struct StaticFiles{{struct_name}}<'a> {
     pub(crate) map: HashMap<&'a str, &'a str>
 }
 
-impl<'a> StaticFiles<'a> {
-    pub fn new() -> StaticFiles<'a> {
+impl<'a> StaticFiles{{struct_name}}<'a> {
+    pub fn new() -> StaticFiles{{struct_name}}<'a> {
         let mut files = StaticFiles {
             map: HashMap::new()
         };
@@ -57,7 +58,8 @@ struct Args {
     arg_in: String,
     arg_out: String,
     flag_version: bool,
-    flag_ignore_extension: bool,
+    flag_ignore_first_dir: bool,
+    flag_pn: String
 }
 
 #[derive(Debug, Serialize)]
@@ -108,7 +110,6 @@ fn main() {
                     name: entry.path().display().to_string(),
                     content: encode(contents)
                 };
-                //println!("{:?}", file);
                 files.push(file);
             }
         }
@@ -116,6 +117,7 @@ fn main() {
 
     let mut context = Context::new();
     context.insert("static_files", &files);
+    context.insert("struct_name", &args.flag_pn);
 
     let out = tera_renderer.render("template", &context).unwrap();
     let mut output = File::create(args.arg_out).unwrap();
