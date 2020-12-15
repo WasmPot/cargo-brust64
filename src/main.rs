@@ -110,8 +110,10 @@ fn main() {
             if entry.path().is_file() {
                 if !entry.path().ends_with(".DS_Store") {
                     println!("{}", entry.path().display());
-
-                    if entry.path().extension() == Some(OsStr::new("png")) {
+                    let extension: Option<&OsStr> = entry.path().extension();
+                    if extension == Some(OsStr::new("png")) ||
+                        extension == Some(OsStr::new("gif"))
+                    {
                         let encoded_image_content =
                             image_base64_wasm::to_base64(&*entry.path().to_string_lossy());
                         let file = SFile {

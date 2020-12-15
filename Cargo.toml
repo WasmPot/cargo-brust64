@@ -1,6 +1,6 @@
 [package]
 name = "cargo-brust64"
-version = "0.1.4"
+version = "0.1.5"
 license = "MIT"
 description = "cargo command to encode a bunch of static files into base64 and contained in a rust file as Hashmap"
 authors = ["david haioum <dav6983@gmail.com>"]
