@@ -47,7 +47,7 @@ pub struct StaticFiles{{struct_name}}<'a> {
 
 impl<'a> StaticFiles{{struct_name}}<'a> {
     pub fn new() -> StaticFiles{{struct_name}}<'a> {
-        let mut files = StaticFiles {
+        let mut files = StaticFiles{{struct_name}} {
             map: HashMap::new()
         };
         {% for file in static_files %}
