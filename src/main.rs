@@ -8,7 +8,7 @@ use std::io::Write;
 
 extern crate tera;
 extern crate base64;
-extern crate image_base64;
+extern crate image_base64_wasm;
 use base64::{encode};
 use tera::{Tera, Context};
 use std::process::exit;
@@ -110,7 +110,7 @@ fn main() {
 
                     if entry.path().extension() == Some(OsStr::new("png")) {
                         let encoded_image_content =
-                            image_base64::to_base64(&*entry.path().to_string_lossy());
+                            image_base64_wasm::to_base64(&*entry.path().to_string_lossy());
                         let file = SFile {
                             name: entry.path().display().to_string(),
                             content: encoded_image_content
