@@ -1,3 +1,10 @@
+extern crate tera;
+extern crate base64;
+extern crate image_base64_wasm;
+extern crate docopt;
+extern crate serde;
+extern crate walkdir;
+
 use docopt::Docopt;
 use std::path::Path;
 use serde::{Serialize, Deserialize};
@@ -5,10 +12,6 @@ use walkdir::WalkDir;
 use std::{fs, env};
 use std::fs::File;
 use std::io::Write;
-
-extern crate tera;
-extern crate base64;
-extern crate image_base64_wasm;
 use base64::{encode};
 use tera::{Tera, Context};
 use std::process::exit;
