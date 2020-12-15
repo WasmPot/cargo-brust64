@@ -8,9 +8,11 @@ use std::io::Write;
 
 extern crate tera;
 extern crate base64;
+extern crate image_base64;
 use base64::{encode};
 use tera::{Tera, Context};
 use std::process::exit;
+use std::ffi::OsStr;
 
 const USAGE: &'static str = r#"
 Extract the content of static files like html, js, css in a given directory
@@ -103,14 +105,28 @@ fn main() {
         for entry in WalkDir::new(args.arg_in) {
             let entry = entry.unwrap();
             if entry.path().is_file() {
-                println!("{}", entry.path().display());
-                let contents = fs::read_to_string(entry.path())
-                    .expect("Something went wrong reading the file");
-                let file = SFile {
-                    name: entry.path().display().to_string(),
-                    content: encode(contents)
-                };
-                files.push(file);
+                if !entry.path().ends_with(".DS_Store") {
+                    println!("{}", entry.path().display());
+
+                    if entry.path().extension() == Some(OsStr::new("png")) {
+                        let encoded_image_content =
+                            image_base64::to_base64(&*entry.path().to_string_lossy());
+                        let file = SFile {
+                            name: entry.path().display().to_string(),
+                            content: encoded_image_content
+                        };
+                        files.push(file);
+                    } else {
+                        let contents = fs::read_to_string(entry.path())
+                            .expect("Something went wrong reading the file");
+                        let file = SFile {
+                            name: entry.path().display().to_string(),
+                            content: encode(contents)
+                        };
+                        files.push(file);
+                    }
+
+                }
             }
         }
     }
