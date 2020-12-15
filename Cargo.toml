@@ -4,7 +4,6 @@ version = "0.1.4"
 license = "MIT"
 description = "cargo command to encode a bunch of static files into base64 and contained in a rust file as Hashmap"
 authors = ["david haioum <dav6983@gmail.com>"]
-edition = "2020"
 repository = "https://github.com/WasmPot/cargo-brust64.git"
 
 
