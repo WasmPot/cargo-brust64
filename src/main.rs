@@ -124,6 +124,7 @@ fn main() {
                     } else {
                         let contents = fs::read_to_string(entry.path())
                             .expect("Something went wrong reading the file");
+                        println!("{}", contents);
                         let file = SFile {
                             name: entry.path().display().to_string(),
                             content: encode(contents)
